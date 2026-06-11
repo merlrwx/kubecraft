@@ -13,6 +13,7 @@ These tests verify:
 import subprocess
 import json
 import os
+import shlex
 import pytest
 import time
 from pathlib import Path
@@ -20,6 +21,7 @@ from pathlib import Path
 
 LESSON_DIR = Path(__file__).parent.parent
 TOPOLOGY_FILE = LESSON_DIR / "topology" / "lab.clab.yml"
+TOPOLOGY = shlex.quote(str(TOPOLOGY_FILE))
 
 
 def run_command(cmd: str, timeout: int = 120) -> subprocess.CompletedProcess:
@@ -125,17 +127,21 @@ class TestLabDeployment:
         """Ensure lab is destroyed after test."""
         yield
         # Cleanup
-        run_command(f"containerlab destroy -t {TOPOLOGY_FILE} --cleanup 2>/dev/null || true")
+        run_command(
+            f"containerlab destroy -t {TOPOLOGY} --cleanup 2>/dev/null || true"
+        )
         time.sleep(2)
 
     def test_lab_deploys_successfully(self):
         """Lab should deploy without errors."""
         # First ensure it's not running
-        run_command(f"containerlab destroy -t {TOPOLOGY_FILE} --cleanup 2>/dev/null || true")
+        run_command(
+            f"containerlab destroy -t {TOPOLOGY} --cleanup 2>/dev/null || true"
+        )
         time.sleep(2)
 
         # Deploy
-        result = run_command(f"containerlab deploy -t {TOPOLOGY_FILE}", timeout=180)
+        result = run_command(f"containerlab deploy -t {TOPOLOGY}", timeout=180)
 
         assert result.returncode == 0, f"Deploy failed: {result.stderr}"
         assert "running" in result.stdout.lower() or "clab" in result.stdout.lower()
@@ -143,9 +149,11 @@ class TestLabDeployment:
     def test_containers_running_after_deploy(self):
         """Containers should be running after deployment."""
         # Deploy first
-        run_command(f"containerlab destroy -t {TOPOLOGY_FILE} --cleanup 2>/dev/null || true")
+        run_command(
+            f"containerlab destroy -t {TOPOLOGY} --cleanup 2>/dev/null || true"
+        )
         time.sleep(2)
-        run_command(f"containerlab deploy -t {TOPOLOGY_FILE}", timeout=180)
+        run_command(f"containerlab deploy -t {TOPOLOGY}", timeout=180)
         time.sleep(5)  # Wait for containers to stabilize
 
         # Check containers
@@ -158,13 +166,15 @@ class TestLabDeployment:
     def test_inspect_returns_data(self):
         """containerlab inspect should return lab information."""
         # Deploy first
-        run_command(f"containerlab destroy -t {TOPOLOGY_FILE} --cleanup 2>/dev/null || true")
+        run_command(
+            f"containerlab destroy -t {TOPOLOGY} --cleanup 2>/dev/null || true"
+        )
         time.sleep(2)
-        run_command(f"containerlab deploy -t {TOPOLOGY_FILE}", timeout=180)
+        run_command(f"containerlab deploy -t {TOPOLOGY}", timeout=180)
         time.sleep(5)
 
         # Inspect
-        result = run_command(f"containerlab inspect -t {TOPOLOGY_FILE}")
+        result = run_command(f"containerlab inspect -t {TOPOLOGY}")
 
         assert result.returncode == 0
         assert "srl1" in result.stdout or "srl2" in result.stdout
@@ -172,13 +182,15 @@ class TestLabDeployment:
     def test_lab_destroys_successfully(self):
         """Lab should destroy without errors."""
         # Deploy first
-        run_command(f"containerlab destroy -t {TOPOLOGY_FILE} --cleanup 2>/dev/null || true")
+        run_command(
+            f"containerlab destroy -t {TOPOLOGY} --cleanup 2>/dev/null || true"
+        )
         time.sleep(2)
-        run_command(f"containerlab deploy -t {TOPOLOGY_FILE}", timeout=180)
+        run_command(f"containerlab deploy -t {TOPOLOGY}", timeout=180)
         time.sleep(5)
 
         # Destroy
-        result = run_command(f"containerlab destroy -t {TOPOLOGY_FILE} --cleanup")
+        result = run_command(f"containerlab destroy -t {TOPOLOGY} --cleanup")
 
         assert result.returncode == 0
 

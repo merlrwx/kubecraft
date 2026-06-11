@@ -13,6 +13,7 @@ These tests verify:
 
 import subprocess
 import os
+import shlex
 import pytest
 import time
 from pathlib import Path
@@ -20,7 +21,9 @@ from pathlib import Path
 
 LESSON_DIR = Path(__file__).parent.parent
 TOPOLOGY_FILE = LESSON_DIR / "topology" / "lab.clab.yml"
+TOPOLOGY = shlex.quote(str(TOPOLOGY_FILE))
 ANSIBLE_DIR = LESSON_DIR / "ansible"
+ANSIBLE_PATH = shlex.quote(str(ANSIBLE_DIR))
 
 
 def run_command(cmd: str, timeout: int = 120) -> subprocess.CompletedProcess:
@@ -176,21 +179,27 @@ class TestLabDeployment:
     def cleanup(self):
         """Ensure lab is destroyed after test."""
         yield
-        run_command(f"containerlab destroy -t {TOPOLOGY_FILE} --cleanup 2>/dev/null || true")
+        run_command(
+            f"containerlab destroy -t {TOPOLOGY} --cleanup 2>/dev/null || true"
+        )
         time.sleep(2)
 
     def test_lab_deploys_successfully(self):
         """Lab should deploy without errors."""
-        run_command(f"containerlab destroy -t {TOPOLOGY_FILE} --cleanup 2>/dev/null || true")
+        run_command(
+            f"containerlab destroy -t {TOPOLOGY} --cleanup 2>/dev/null || true"
+        )
         time.sleep(2)
-        result = run_command(f"containerlab deploy -t {TOPOLOGY_FILE}", timeout=180)
+        result = run_command(f"containerlab deploy -t {TOPOLOGY}", timeout=180)
         assert result.returncode == 0, f"Deploy failed: {result.stderr}"
 
     def test_all_containers_running(self):
         """All 4 containers should be running after deployment."""
-        run_command(f"containerlab destroy -t {TOPOLOGY_FILE} --cleanup 2>/dev/null || true")
+        run_command(
+            f"containerlab destroy -t {TOPOLOGY} --cleanup 2>/dev/null || true"
+        )
         time.sleep(2)
-        run_command(f"containerlab deploy -t {TOPOLOGY_FILE}", timeout=180)
+        run_command(f"containerlab deploy -t {TOPOLOGY}", timeout=180)
         time.sleep(5)
         result = run_command("docker ps --filter 'name=clab-ip-fundamentals' --format '{{.Names}}'")
         containers = [c for c in result.stdout.strip().split('\n') if c]
@@ -203,17 +212,21 @@ class TestConnectivity:
     @pytest.fixture(autouse=True)
     def deploy_and_configure(self):
         """Deploy lab and apply Ansible configuration."""
-        run_command(f"containerlab destroy -t {TOPOLOGY_FILE} --cleanup 2>/dev/null || true")
+        run_command(
+            f"containerlab destroy -t {TOPOLOGY} --cleanup 2>/dev/null || true"
+        )
         time.sleep(2)
-        run_command(f"containerlab deploy -t {TOPOLOGY_FILE}", timeout=180)
+        run_command(f"containerlab deploy -t {TOPOLOGY}", timeout=180)
         time.sleep(10)
         run_command(
-            f"cd {ANSIBLE_DIR} && ansible-playbook -i inventory.yml playbook.yml",
+            f"cd {ANSIBLE_PATH} && ansible-playbook -i inventory.yml playbook.yml",
             timeout=120
         )
         time.sleep(5)
         yield
-        run_command(f"containerlab destroy -t {TOPOLOGY_FILE} --cleanup 2>/dev/null || true")
+        run_command(
+            f"containerlab destroy -t {TOPOLOGY} --cleanup 2>/dev/null || true"
+        )
 
     def test_host1_pings_srl1(self):
         """host1 should reach srl1 on the directly connected subnet."""
