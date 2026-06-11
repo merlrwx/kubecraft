@@ -1,0 +1,16 @@
+name: mixed-topology
+
+topology:
+  nodes:
+    srl1:
+      kind: srl
+      image: ghcr.io/nokia/srlinux:24.10.1
+
+    host1:
+      kind: linux
+      image: alpine:3.20
+#      exec:
+#        - ip link set dev eth1 up
+
+  links:
+    - endpoints: ["srl1:e1-1", "host1:eth1"]

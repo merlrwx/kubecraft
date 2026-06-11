@@ -1,0 +1,46 @@
+{
+  "first-lab": [
+    {
+      "lab_name": "first-lab",
+      "labPath": "topology/three-node.clab.yml",
+      "absLabPath": "/home/jason/JD/20-29 Code/21 Public Repos/21.01 lab/kubecraft/lessons/clab/01-containerlab-primer/topology/three-node.clab.yml",
+      "name": "clab-first-lab-srl1",
+      "container_id": "2ee15eb18682",
+      "image": "ghcr.io/nokia/srlinux:24.10.1",
+      "kind": "srl",
+      "state": "running",
+      "status": "Up 9 minutes",
+      "ipv4_address": "172.20.20.4/24",
+      "ipv6_address": "3fff:172:20:20::4/64",
+      "owner": "jason"
+    },
+    {
+      "lab_name": "first-lab",
+      "labPath": "topology/three-node.clab.yml",
+      "absLabPath": "/home/jason/JD/20-29 Code/21 Public Repos/21.01 lab/kubecraft/lessons/clab/01-containerlab-primer/topology/three-node.clab.yml",
+      "name": "clab-first-lab-srl2",
+      "container_id": "1c24a2ed675c",
+      "image": "ghcr.io/nokia/srlinux:24.10.1",
+      "kind": "srl",
+      "state": "running",
+      "status": "Up 9 minutes",
+      "ipv4_address": "172.20.20.2/24",
+      "ipv6_address": "3fff:172:20:20::2/64",
+      "owner": "jason"
+    },
+    {
+      "lab_name": "first-lab",
+      "labPath": "topology/three-node.clab.yml",
+      "absLabPath": "/home/jason/JD/20-29 Code/21 Public Repos/21.01 lab/kubecraft/lessons/clab/01-containerlab-primer/topology/three-node.clab.yml",
+      "name": "clab-first-lab-srl3",
+      "container_id": "37d94e2c3497",
+      "image": "ghcr.io/nokia/srlinux:24.10.1",
+      "kind": "srl",
+      "state": "running",
+      "status": "Up 9 minutes",
+      "ipv4_address": "172.20.20.3/24",
+      "ipv6_address": "3fff:172:20:20::3/64",
+      "owner": "jason"
+    }
+  ]
+}
